@@ -60,7 +60,7 @@ public class PluginImpl implements IPlugin {
 
             // 创建主面板，使用 BorderLayout
             JPanel mainPanel = new JPanel(new BorderLayout());
-            mainPanel.setPreferredSize(new Dimension(500, 600));
+            mainPanel.setPreferredSize(new Dimension(300, 600));
             // 顶部操作面板
             JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
             JButton visualizeButton = new JButton("可视化");
@@ -99,7 +99,7 @@ public class PluginImpl implements IPlugin {
 
             // 主面板布局
             mainPanel.add(topPanel, BorderLayout.NORTH);
-            mainPanel.add(browserPane, BorderLayout.CENTER);
+            mainPanel.add(browser.getComponent(), BorderLayout.CENTER);
 
             panel.setContent(mainPanel);
             return panel;

@@ -1,0 +1,42 @@
+<idea-plugin>
+    <!--  插件的独立id-->
+    <id>com.jtool-echarts-view.rcc.id</id>
+    <!--  你的插件名称，也是对应市场的那个-->
+    <name>echarts-view</name>
+    <version>1.0</version>
+    <!--  你的邮箱、网址和昵称-->
+    <vendor email="reisen7@foxmail.com" url="https://github.com/reisen7/jtool-echarts-view">reisen7</vendor>
+
+    <description><![CDATA[
+      ECharts visualization tool for IntelliJ IDEA.  
+      echarts可视化小工具，支持选中option一键可视化，mock数据补全，适合前端/数据分析/可视化开发者。
+    ]]></description>
+
+    <change-notes><![CDATA[
+      1.0
+    ]]>
+    </change-notes>
+
+    <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
+    <!-- 最低可安装的idea版本-->
+    <idea-version since-build="173.0"/>
+
+    <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+         on how to target different products -->
+    <depends>com.intellij.modules.platform</depends>
+    <!--插件所需的依赖信息-->
+    <extensions defaultExtensionNs="com.intellij">
+        <toolWindow
+            id="ECharts可视化"
+            icon="format.svg"
+            anchor="right"
+            factoryClass="org.example.EchartsToolWindowFactory"
+            secondary="false"
+            canCloseContent="false"/>
+    </extensions>
+    <!--方法和行为都在这里-->
+    <actions>
+        <!-- Add your actions here -->
+    </actions>
+
+</idea-plugin>

@@ -30,7 +30,7 @@
             justify-content: center;
             align-items: flex-start;
             margin: 10px;
-            width: 80%;
+            width: 90%;
             gap: 32px;
         }
 
@@ -41,7 +41,7 @@
             padding: 24px;
             flex: 1 1 0;
             min-width: 0;
-            width: 85%;
+            width: 93%;
             display: flex;
             flex-direction: column;
         }
@@ -105,177 +105,177 @@
 </head>
 
 <body>
-<div class="header">ECharts 可视化</div>
-<div class="container">
-    <div class="card">
-        <div class="chart-title">图表展示</div>
-        <div id="main"></div>
+    <div class="header">ECharts 可视化</div>
+    <div class="container">
+        <div class="card">
+            <div class="chart-title">图表展示</div>
+            <div id="main"></div>
+        </div>
+        <div class="card">
+            <div class="option-title">Option JSON</div>
+            <pre id="debug" class="option-json">等待可视化...</pre>
+        </div>
+
     </div>
-    <div class="card">
-        <div class="option-title">Option JSON</div>
-        <pre id="debug" class="option-json">等待可视化...</pre>
-    </div>
+    <div id="error" class="error"></div>
 
-</div>
-<div id="error" class="error"></div>
-
-<script>
-    document.getElementById('main').style.height = '400px';
-    document.getElementById('main').style.width = '100%';
-    let chart = echarts.init(document.getElementById('main'));
-    if (!chart) {
-        document.getElementById('error').innerText = 'ECharts 初始化失败';
-    } else {
-        document.getElementById('error').innerText = '';
-    }
-
-    // 页面加载后不自动渲染，等待 renderECharts 调用
-    function isArray(val) {
-        return Array.isArray(val);
-    }
-
-    function mockArray(len, type) {
-        if (type === 'category') {
-            return ['A', 'B', 'C', 'D', 'E'].slice(0, len || 5);
+    <script>
+        document.getElementById('main').style.height = '400px';
+        document.getElementById('main').style.width = '100%';
+        let chart = echarts.init(document.getElementById('main'));
+        if (!chart) {
+            document.getElementById('error').innerText = 'ECharts 初始化失败';
         } else {
-            return [10, 20, 30, 40, 50].slice(0, len || 5);
+            document.getElementById('error').innerText = '';
         }
-    }
 
-    function replaceDataFields(optionStr, mockArrStr) {
-        let result = '';
-        let i = 0;
-        while (i < optionStr.length) {
-            let dataIdx = optionStr.indexOf('data', i);
-            if (dataIdx === -1) {
-                result += optionStr.slice(i);
-                break;
-            }
-            // 检查是不是 data:（防止变量名、字符串等误伤）
-            let colonIdx = optionStr.indexOf(':', dataIdx);
-            if (colonIdx === -1) break;
-            // 追加前面的内容
-            result += optionStr.slice(i, colonIdx + 1);
-            // 跳过空格
-            let j = colonIdx + 1;
-            while (optionStr[j] === ' ' || optionStr[j] === '\n' || optionStr[j] === '\r') j++;
-            // 找下一个 , 或 }
-            let endIdx = j;
-            let inBracket = 0, inQuote = false;
-            while (endIdx < optionStr.length) {
-                let ch = optionStr[endIdx];
-                if (ch === '"' || ch === "'") inQuote = !inQuote;
-                if (!inQuote) {
-                    if (ch === '[') inBracket++;
-                    if (ch === ']') inBracket--;
-                    if (inBracket === 0 && (ch === ',' || ch === '}')) break;
-                }
-                endIdx++;
-            }
-            // 替换为 mock
-            result += ' ' + mockArrStr;
-            // 跳到 , 或 }
-            i = endIdx;
+        // 页面加载后不自动渲染，等待 renderECharts 调用
+        function isArray(val) {
+            return Array.isArray(val);
         }
-        return result;
-    }
 
-    function renderECharts(option) {
-        let debugDiv = document.getElementById('debug');
-        let optionObj = option;
-        let parseError = null;
-        let debugInfo = '';
-        try {
-            if (typeof option === 'string') {
-                debugInfo += '原始字符串:\n' + option + '\n\n';
-                try {
-                    // 1. 先尝试 JSON5 解析
-                    optionObj = JSON5.parse(option);
-                    debugInfo += 'JSON5 解析成功\n';
-                } catch (e) {
-                    debugInfo += 'JSON5 解析失败: ' + e.message + '\n';
-                    // 2. 一刀切 mock 替换所有 data: xxx
-                    let replaced = option.replace(/data\s*:\s*([a-zA-Z_][a-zA-Z0-9_]*)\b(?!\s*[\[\{\\"'])/g, 'data: [10, 20, 30, 40, 50]');
-                    debugInfo += 'mock 替换后:\n' + replaced + '\n\n';
-                    try {
-                        optionObj = JSON5.parse(replaced);
-                        debugInfo += 'mock 替换后 JSON5 解析成功\n';
-                    } catch (e2) {
-                        debugInfo += 'mock 替换后 JSON5 解析失败: ' + e2.message + '\n';
-                        parseError = e2;
-                        optionObj = null;
-                    }
-                }
-            }
-            if (optionObj) {
-                debugInfo += '最终 optionObj:\n' + JSON.stringify(optionObj, null, 2);
-                debugDiv.innerText = debugInfo;
+        function mockArray(len, type) {
+            if (type === 'category') {
+                return ['A', 'B', 'C', 'D', 'E'].slice(0, len || 5);
             } else {
-                throw parseError || new Error('option无法解析');
+                return [10, 20, 30, 40, 50].slice(0, len || 5);
             }
-        } catch (e) {
-            debugDiv.innerText = debugInfo + '\noption解析异常: ' + e.message + '\n请用标准 JSON 格式（所有 key、字符串用双引号，不能有变量/注释）';
-            document.getElementById('error').innerText = 'option解析异常: ' + e.message;
-            return;
         }
-        document.getElementById('error').innerText = '';
-        try {
-            // mock xAxis.data
-            if (optionObj.xAxis) {
-                let xArr = Array.isArray(optionObj.xAxis) ? optionObj.xAxis : [optionObj.xAxis];
-                xArr.forEach(function (x) {
-                    if (!Array.isArray(x.data)) {
-                        x.data = ["A", "B", "C", "D", "E"];
+
+        function replaceDataFields(optionStr, mockArrStr) {
+            let result = '';
+            let i = 0;
+            while (i < optionStr.length) {
+                let dataIdx = optionStr.indexOf('data', i);
+                if (dataIdx === -1) {
+                    result += optionStr.slice(i);
+                    break;
+                }
+                // 检查是不是 data:（防止变量名、字符串等误伤）
+                let colonIdx = optionStr.indexOf(':', dataIdx);
+                if (colonIdx === -1) break;
+                // 追加前面的内容
+                result += optionStr.slice(i, colonIdx + 1);
+                // 跳过空格
+                let j = colonIdx + 1;
+                while (optionStr[j] === ' ' || optionStr[j] === '\n' || optionStr[j] === '\r') j++;
+                // 找下一个 , 或 }
+                let endIdx = j;
+                let inBracket = 0, inQuote = false;
+                while (endIdx < optionStr.length) {
+                    let ch = optionStr[endIdx];
+                    if (ch === '"' || ch === "'") inQuote = !inQuote;
+                    if (!inQuote) {
+                        if (ch === '[') inBracket++;
+                        if (ch === ']') inBracket--;
+                        if (inBracket === 0 && (ch === ',' || ch === '}')) break;
                     }
-                });
+                    endIdx++;
+                }
+                // 替换为 mock
+                result += ' ' + mockArrStr;
+                // 跳到 , 或 }
+                i = endIdx;
             }
-// mock yAxis.data（极少用，但也兼容）
-            if (optionObj.yAxis) {
-                let yArr = Array.isArray(optionObj.yAxis) ? optionObj.yAxis : [optionObj.yAxis];
-                yArr.forEach(function (y) {
-                    if (y && !Array.isArray(y.data)) {
-                        y.data = [10, 20, 30, 40, 50];
-                    }
-                });
-            }
-// mock series.data
-            if (optionObj.series && Array.isArray(optionObj.series)) {
-                optionObj.series.forEach(function (s) {
-                    if (!Array.isArray(s.data)) {
-                        if (s.type === 'line' || s.type === 'bar') {
-                            s.data = [10, 20, 30, 40, 50];
-                        } else if (s.type === 'pie') {
-                            s.data = [
-                                {name: 'A', value: 10},
-                                {name: 'B', value: 20},
-                                {name: 'C', value: 30}
-                            ];
-                        } else if (s.type === 'scatter') {
-                            s.data = [[10, 20], [20, 30], [30, 40]];
+            return result;
+        }
+
+        function renderECharts(option) {
+            let debugDiv = document.getElementById('debug');
+            let optionObj = option;
+            let parseError = null;
+            let debugInfo = '';
+            try {
+                if (typeof option === 'string') {
+                    debugInfo += '原始字符串:\n' + option + '\n\n';
+                    try {
+                        // 1. 先尝试 JSON5 解析
+                        optionObj = JSON5.parse(option);
+                        debugInfo += 'JSON5 解析成功\n';
+                    } catch (e) {
+                        debugInfo += 'JSON5 解析失败: ' + e.message + '\n';
+                        // 2. 一刀切 mock 替换所有 data: xxx
+                        let replaced = option.replace(/data\s*:\s*([a-zA-Z_][a-zA-Z0-9_]*)\b(?!\s*[\[\{\\"'])/g, 'data: [10, 20, 30, 40, 50]');
+                        debugInfo += 'mock 替换后:\n' + replaced + '\n\n';
+                        try {
+                            optionObj = JSON5.parse(replaced);
+                            debugInfo += 'mock 替换后 JSON5 解析成功\n';
+                        } catch (e2) {
+                            debugInfo += 'mock 替换后 JSON5 解析失败: ' + e2.message + '\n';
+                            parseError = e2;
+                            optionObj = null;
                         }
                     }
-                });
-                // xAxis/yAxis 补全
-                let first = optionObj.series[0];
-                if ((first.type === 'line' || first.type === 'bar' || first.type === 'scatter')) {
-                    if (!optionObj.xAxis) {
-                        optionObj.xAxis = {type: 'category', data: ["A", "B", "C", "D", "E"]};
-                    }
-                    if (!optionObj.yAxis) {
-                        optionObj.yAxis = {};
+                }
+                if (optionObj) {
+                    debugInfo += '最终 optionObj:\n' + JSON.stringify(optionObj, null, 2);
+                    debugDiv.innerText = debugInfo;
+                } else {
+                    throw parseError || new Error('option无法解析');
+                }
+            } catch (e) {
+                debugDiv.innerText = debugInfo + '\noption解析异常: ' + e.message + '\n请用标准 JSON 格式（所有 key、字符串用双引号，不能有变量/注释）';
+                document.getElementById('error').innerText = 'option解析异常: ' + e.message;
+                return;
+            }
+            document.getElementById('error').innerText = '';
+            try {
+                // mock xAxis.data
+                if (optionObj.xAxis) {
+                    let xArr = Array.isArray(optionObj.xAxis) ? optionObj.xAxis : [optionObj.xAxis];
+                    xArr.forEach(function (x) {
+                        if (!Array.isArray(x.data)) {
+                            x.data = ["A", "B", "C", "D", "E"];
+                        }
+                    });
+                }
+                // mock yAxis.data（极少用，但也兼容）
+                if (optionObj.yAxis) {
+                    let yArr = Array.isArray(optionObj.yAxis) ? optionObj.yAxis : [optionObj.yAxis];
+                    yArr.forEach(function (y) {
+                        if (y && !Array.isArray(y.data)) {
+                            y.data = [10, 20, 30, 40, 50];
+                        }
+                    });
+                }
+                // mock series.data
+                if (optionObj.series && Array.isArray(optionObj.series)) {
+                    optionObj.series.forEach(function (s) {
+                        if (!Array.isArray(s.data)) {
+                            if (s.type === 'line' || s.type === 'bar') {
+                                s.data = [10, 20, 30, 40, 50];
+                            } else if (s.type === 'pie') {
+                                s.data = [
+                                    { name: 'A', value: 10 },
+                                    { name: 'B', value: 20 },
+                                    { name: 'C', value: 30 }
+                                ];
+                            } else if (s.type === 'scatter') {
+                                s.data = [[10, 20], [20, 30], [30, 40]];
+                            }
+                        }
+                    });
+                    // xAxis/yAxis 补全
+                    let first = optionObj.series[0];
+                    if ((first.type === 'line' || first.type === 'bar' || first.type === 'scatter')) {
+                        if (!optionObj.xAxis) {
+                            optionObj.xAxis = { type: 'category', data: ["A", "B", "C", "D", "E"] };
+                        }
+                        if (!optionObj.yAxis) {
+                            optionObj.yAxis = {};
+                        }
                     }
                 }
+                chart.clear();
+                chart.setOption(optionObj, true);
+            } catch (e) {
+                chart.clear();
+                document.getElementById('error').innerText = '渲染失败: ' + e.message + '\n' + e.stack;
             }
-            chart.clear();
-            chart.setOption(optionObj, true);
-        } catch (e) {
-            chart.clear();
-            document.getElementById('error').innerText = '渲染失败: ' + e.message + '\n' + e.stack;
         }
-    }
 
-    window.renderECharts = renderECharts;
-</script>
+        window.renderECharts = renderECharts;
+    </script>
 </body>
 
 </html>
