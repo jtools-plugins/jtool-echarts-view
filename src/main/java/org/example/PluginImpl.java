@@ -100,10 +100,9 @@ public class PluginImpl implements IPlugin {
                 }
 
                 // 智能 mock data 字段
-                optionText = OptionMocker.mockOption(optionText, fileText);
-
+                String mockOption = org.example.OptionMocker.mockOption(optionText, fileText);
                 finalBrowser.getCefBrowser().executeJavaScript(
-                        "window.renderECharts(" + escapeForJS(optionText) + ");",
+                        "window.renderECharts(" + escapeForJS(mockOption) + ");",
                         finalBrowser.getCefBrowser().getURL(), 0);
             });
 
@@ -213,7 +212,7 @@ public class PluginImpl implements IPlugin {
 
     @Override
     public String pluginVersion() {
-        return "0.0.1";
+        return "0.0.2";
     }
 }
 

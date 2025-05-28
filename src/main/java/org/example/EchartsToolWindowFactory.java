@@ -19,7 +19,7 @@ import java.util.Base64;
 
 /**
  * @author reisen7
- * @date 2025/5/29 1:42
+ * @date 2025/5/29 1:57
  * @description 
  */
 
@@ -73,7 +73,7 @@ public class EchartsToolWindowFactory implements ToolWindowFactory {
                 JOptionPane.showMessageDialog(mainPanel, "请先在代码区选中 ECharts option（JSON）！", "提示", JOptionPane.WARNING_MESSAGE);
                 return;
             }
-            // 智能 mock option
+            // 智能 mock option（只对选区 optionText 做 mock，变量查找用 fileText）
             String mockOption = org.example.OptionMocker.mockOption(optionText, fileText);
             finalBrowser.getCefBrowser().executeJavaScript(
                     "window.renderECharts(" + escapeForJS(mockOption) + ");",
