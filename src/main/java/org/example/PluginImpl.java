@@ -45,11 +45,13 @@ public class PluginImpl implements IPlugin {
 
     public String getHtmlDataUri(String resourceName) throws IOException {
         InputStream in = getClass().getResourceAsStream("/" + resourceName);
-        if (in == null) throw new FileNotFoundException(resourceName + " not found in jar!");
+        if (in == null)
+            throw new FileNotFoundException(resourceName + " not found in jar!");
         byte[] bytes = in.readAllBytes();
         String base64 = Base64.getEncoder().encodeToString(bytes);
         return "data:text/html;base64," + base64;
     }
+
 
     @Override
     public JComponent createPanel(Project project) {
@@ -66,6 +68,7 @@ public class PluginImpl implements IPlugin {
 
             // JCEF 浏览器
             JBCefBrowser browser = null;
+            
             try {
                 browser = new JBCefBrowser(getHtmlDataUri("echarts_view.html"));
             } catch (IOException e) {
