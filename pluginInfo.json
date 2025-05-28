@@ -1,0 +1,7 @@
+{
+    "pluginName":"插件名称",
+    "pluginDesc":"插件描述",
+    "pluginIcon":"插件在插件列表中展示的图标,支持svg,png等,大小为48x48",
+    "pluginTabIcon":"插件tab标签上的图标",
+    "indexPage":"插件入口地址,详情参考模板"
+}
