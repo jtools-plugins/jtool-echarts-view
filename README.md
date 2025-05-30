@@ -13,10 +13,12 @@
 安装之后，在仓库地址里面下载jar包
 
 > [https://github.com/jtools-plugins/jtool-echarts-view](https://github.com/jtools-plugins/jtool-echarts-view)
->
+
+
 ![在这里插入图片描述](doc/2.png)
 
 下载完成之后，导入jar包
+
 ![在这里插入图片描述](doc/3.png)
 
 jar包往这里面拖拽就行
